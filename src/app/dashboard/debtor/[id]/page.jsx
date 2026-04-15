@@ -98,8 +98,8 @@ export default async function DebtorDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 glass border-b border-border/50 px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
+      <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 sm:px-6 py-4">
+        <div className="max-w-3xl mx-auto flex items-center gap-3">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary">
               <ArrowLeft className="w-4 h-4" />
@@ -113,7 +113,7 @@ export default async function DebtorDetailPage({ params }) {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Resumo financeiro */}
         <div className="flex gap-3">
           <SummaryCard label={labels.credit} value={totals.totalDeposits} />
@@ -121,32 +121,36 @@ export default async function DebtorDetailPage({ params }) {
           <SummaryCard label={labels.balance} value={totals.balance} highlight />
         </div>
 
-        {/* Ações interativas: modais, aprovação, configurações (client-only) */}
-        <ClientOnly>
-          <DebtorAdminActions
-            debtorId={debtor._id}
-            displayMode={debtor.displayMode}
-            canCreatePayment={debtor.canCreatePayment}
-            pendingTransactions={pendingTransactions}
-          />
-        </ClientOnly>
+        {/* Layout de duas colunas no desktop */}
+        <div className="lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start space-y-6 lg:space-y-0">
+          {/* Coluna esquerda: ações e configurações */}
+          <div className="space-y-6">
+            <ClientOnly>
+              <DebtorAdminActions
+                debtorId={debtor._id}
+                displayMode={debtor.displayMode}
+                canCreatePayment={debtor.canCreatePayment}
+                pendingTransactions={pendingTransactions}
+              />
+            </ClientOnly>
+          </div>
 
-        <Separator />
-
-        {/* Histórico */}
-        <div>
-          <h3 className="font-semibold mb-3 text-foreground">Histórico de transações</h3>
-          {historyTransactions.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Nenhuma transação registrada ainda.
-            </p>
-          ) : (
-            <div>
-              {historyTransactions.map(t => (
-                <TransactionItem key={t._id} transaction={t} displayMode={debtor.displayMode} />
-              ))}
-            </div>
-          )}
+          {/* Coluna direita: histórico */}
+          <div>
+            <Separator className="lg:hidden" />
+            <h3 className="font-semibold mb-3 text-foreground mt-6 lg:mt-0">Histórico de transações</h3>
+            {historyTransactions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                Nenhuma transação registrada ainda.
+              </p>
+            ) : (
+              <div>
+                {historyTransactions.map(t => (
+                  <TransactionItem key={t._id} transaction={t} displayMode={debtor.displayMode} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>

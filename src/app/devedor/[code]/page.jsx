@@ -114,13 +114,13 @@ export default async function DebtorPage({ params }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 glass border-b border-border/50 px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold gradient-text">{debtor.name}</h1>
+      <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 sm:px-6 py-4">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg font-bold gradient-text truncate">{debtor.name}</h1>
             <p className="text-xs text-muted-foreground font-mono">{debtor.code}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <ClientOnly>
               <EnableNotificationsButton role="debtor" debtorCode={debtor.code} />
             </ClientOnly>
@@ -133,7 +133,7 @@ export default async function DebtorPage({ params }) {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
         {/* Resumo financeiro */}
         <div className="flex gap-3">
           <SummaryCard label={labels.credit} value={totals.totalDeposits} />
@@ -141,47 +141,52 @@ export default async function DebtorPage({ params }) {
           <SummaryCard label={labels.balance} value={totals.balance} highlight />
         </div>
 
-        {/* Pendentes (pagamentos aguardando aprovação) */}
-        {pendingTransactions.length > 0 && (
-          <div className="glass rounded-2xl p-4 border-amber-500/20 glow-warning">
-            <p className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-2">
-              Pagamentos aguardando aprovação
-            </p>
-            {pendingTransactions.map(t => (
-              <div key={t._id} className="flex items-center justify-between py-1">
-                <span className="text-sm text-foreground">{t.description || '—'}</span>
-                <span className="text-sm font-medium text-foreground">{formatBRL(t.amount)}</span>
+        {/* Layout duas colunas no desktop */}
+        <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 lg:items-start space-y-6 lg:space-y-0">
+          {/* Coluna esquerda: pendentes + botão de pagamento */}
+          <div className="space-y-4">
+            {/* Pendentes (pagamentos aguardando aprovação) */}
+            {pendingTransactions.length > 0 && (
+              <div className="glass rounded-2xl p-4 border border-amber-500/20 glow-warning">
+                <p className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-2">
+                  Pagamentos aguardando aprovação
+                </p>
+                {pendingTransactions.map(t => (
+                  <div key={t._id} className="flex items-center justify-between gap-2 py-1">
+                    <span className="text-sm text-foreground truncate">{t.description || '—'}</span>
+                    <span className="text-sm font-medium text-foreground shrink-0">{formatBRL(t.amount)}</span>
+                  </div>
+                ))}
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70 mt-2">
+                  Total pendente: {formatBRL(totals.pendingAmount)}
+                </p>
               </div>
-            ))}
-            <p className="text-xs text-amber-600/70 dark:text-amber-400/70 mt-2">
-              Total pendente: {formatBRL(totals.pendingAmount)}
-            </p>
+            )}
+
+            {/* Botão de registrar pagamento (condicional) */}
+            {debtor.canCreatePayment && (
+              <ClientOnly>
+                <DebtorPaymentButton debtorCode={debtor.code} debtorId={debtor._id} />
+              </ClientOnly>
+            )}
           </div>
-        )}
 
-        {/* Botão de registrar pagamento (condicional) */}
-        {debtor.canCreatePayment && (
-          <ClientOnly>
-            <DebtorPaymentButton debtorCode={debtor.code} debtorId={debtor._id} />
-          </ClientOnly>
-        )}
-
-        <Separator />
-
-        {/* Histórico */}
-        <div>
-          <h3 className="font-semibold mb-3 text-foreground">Histórico</h3>
-          {approvedTransactions.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Nenhuma transação registrada ainda.
-            </p>
-          ) : (
-            <div>
-              {approvedTransactions.map(t => (
-                <TransactionItem key={t._id} transaction={t} displayMode={debtor.displayMode} />
-              ))}
-            </div>
-          )}
+          {/* Coluna direita: histórico */}
+          <div>
+            <Separator className="lg:hidden" />
+            <h3 className="font-semibold mb-3 text-foreground mt-6 lg:mt-0">Histórico</h3>
+            {approvedTransactions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                Nenhuma transação registrada ainda.
+              </p>
+            ) : (
+              <div>
+                {approvedTransactions.map(t => (
+                  <TransactionItem key={t._id} transaction={t} displayMode={debtor.displayMode} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>

@@ -44,8 +44,8 @@ export default function DisplayModeToggle({ debtorId, initialMode }) {
           disabled={loading}
           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
             mode === 'deposit'
-              ? 'bg-neutral-900 text-white border-neutral-900'
-              : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+              ? 'bg-foreground text-background border-foreground'
+              : 'bg-background text-muted-foreground border-border hover:border-foreground/40'
           }`}
         >
           Depósito / Crédito
@@ -55,14 +55,14 @@ export default function DisplayModeToggle({ debtorId, initialMode }) {
           disabled={loading}
           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${
             mode === 'debt'
-              ? 'bg-neutral-900 text-white border-neutral-900'
-              : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+              ? 'bg-foreground text-background border-foreground'
+              : 'bg-background text-muted-foreground border-border hover:border-foreground/40'
           }`}
         >
           Saldo Devedor
         </button>
       </div>
-      <p className="text-xs text-neutral-400">
+      <p className="text-xs text-muted-foreground">
         {mode === 'deposit'
           ? 'Exibe o que foi depositado/creditado e o que foi pago de volta.'
           : 'Exibe o total da dívida e quanto já foi quitado.'}

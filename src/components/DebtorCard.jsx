@@ -28,19 +28,19 @@ export default function DebtorCard({ debtor }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">Depositado</p>
-            <p className="text-sm font-semibold text-primary">{formatBRL(totalDeposits)}</p>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1 truncate">Depositado</p>
+            <p className="text-xs sm:text-sm font-semibold text-primary truncate">{formatBRL(totalDeposits)}</p>
           </div>
-          <div>
-            <p className="text-xs text-muted-foreground mb-1">Pago</p>
-            <p className="text-sm font-semibold text-foreground">{formatBRL(totalPaid)}</p>
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1 truncate">Pago</p>
+            <p className="text-xs sm:text-sm font-semibold text-foreground truncate">{formatBRL(totalPaid)}</p>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground mb-1">Saldo</p>
+          <div className="text-right min-w-0">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1 truncate">Saldo</p>
             <p className={cn(
-              'text-sm font-bold',
+              'text-xs sm:text-sm font-bold truncate',
               balance > 0 ? 'text-emerald-500 dark:text-emerald-400' : balance < 0 ? 'text-red-500' : 'text-muted-foreground'
             )}>
               {formatBRL(balance)}

@@ -72,8 +72,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 glass border-b border-border/50 px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 sm:px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Image src="/icon-logo.png" alt="Saldo Justo" width={32} height={32} className="invert dark:invert-0" />
             <div>
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
+      <main className="max-w-5xl mx-auto px-4 py-6">
         <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-4">
           Devedores
         </h2>
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
             <p className="text-sm mt-1">Use o botão acima para adicionar o primeiro.</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {debtors.map(debtor => (
               <DebtorCard key={debtor._id} debtor={debtor} />
             ))}
