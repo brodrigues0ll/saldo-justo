@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import { jsonOk, jsonError } from '@/lib/api-helpers'
 import { getSession } from '@/lib/auth'
@@ -62,6 +63,8 @@ export async function PATCH(request, context) {
   const debtor = await Debtor.findByIdAndUpdate(id, updates, { new: true, runValidators: true })
   if (!debtor) return jsonError('Devedor não encontrado', 404)
 
+  revalidatePath('/dashboard')
+  revalidatePath(`/dashboard/debtor/${id}`)
   return jsonOk(debtor)
 }
 
@@ -81,5 +84,6 @@ export async function DELETE(request, context) {
   await Transaction.deleteMany({ debtorId: id })
   await PushSubscription.deleteMany({ debtorId: id })
 
+  revalidatePath('/dashboard')
   return jsonOk({ message: 'Devedor excluído com sucesso' })
 }
