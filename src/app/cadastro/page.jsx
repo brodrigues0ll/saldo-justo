@@ -22,7 +22,6 @@ export default async function CadastroPage() {
               alt="Saldo Justo"
               width={180}
               height={48}
-              className="invert dark:invert-0"
               priority
             />
           </div>

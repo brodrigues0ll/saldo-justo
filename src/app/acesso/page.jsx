@@ -17,7 +17,7 @@ export default function AcessoPage() {
               alt="Saldo Justo"
               width={180}
               height={48}
-              className="select-none cursor-default invert dark:invert-0"
+              className="select-none cursor-default"
             />
           </div>
           <p className="text-muted-foreground text-sm">Digite seu código para acessar</p>
