@@ -33,10 +33,6 @@ export async function DELETE(request, context) {
   const transaction = await Transaction.findById(id)
   if (!transaction) return jsonError('Transação não encontrada', 404)
 
-  if (transaction.status === 'approved') {
-    return jsonError('Transações aprovadas não podem ser excluídas', 422)
-  }
-
   await transaction.deleteOne()
   return jsonOk({ message: 'Transação excluída com sucesso' })
 }

@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { formatBRL } from '@/lib/money'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import DeleteTransactionButton from '@/components/DeleteTransactionButton'
 
 const statusConfig = {
   approved: { label: 'Aprovado', className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
@@ -8,8 +9,8 @@ const statusConfig = {
   rejected: { label: 'Rejeitado', className: 'bg-red-500/10 text-red-500 border-red-500/20' },
 }
 
-export default function TransactionItem({ transaction, displayMode = 'deposit' }) {
-  const { type, amount, description, status, createdBy, createdAt, transactionDate } = transaction
+export default function TransactionItem({ transaction, displayMode = 'deposit', showDeleteButton = false }) {
+  const { type, amount, description, status, createdBy, createdAt, transactionDate, _id: transactionId } = transaction
   const st = statusConfig[status] || statusConfig.approved
   const isDeposit = type === 'deposit'
   const depositLabel = displayMode === 'debt' ? 'Dívida' : 'Depósito'
@@ -57,6 +58,13 @@ export default function TransactionItem({ transaction, displayMode = 'deposit' }
         )}
         <p className="text-xs text-muted-foreground/60 mt-0.5">{date}</p>
       </div>
+
+      {/* Delete button (admin) */}
+      {showDeleteButton && (
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <DeleteTransactionButton transactionId={transactionId} />
+        </div>
+      )}
 
       {/* Valor */}
       <span className={cn(

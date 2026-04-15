@@ -1,10 +1,10 @@
-import { auth } from '@/auth'
+import { getSession } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import AdminLoginForm from '@/components/AdminLoginForm'
 import Image from 'next/image'
 
 export default async function LoginPage() {
-  const session = await auth()
+  const session = await getSession()
   if (session) redirect('/dashboard')
 
   return (

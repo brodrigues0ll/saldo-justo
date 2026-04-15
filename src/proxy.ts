@@ -1,20 +1,20 @@
-import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export const proxy = auth(function proxyHandler(request) {
-  const session = request.auth
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const token = request.cookies.get('next-auth.session-token')?.value
 
-  if (pathname.startsWith('/dashboard') && !session) {
+  if (pathname.startsWith('/dashboard') && !token) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if ((pathname === '/login' || pathname === '/cadastro') && session) {
+  if ((pathname === '/login' || pathname === '/cadastro') && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: ['/dashboard/:path*', '/login', '/cadastro'],

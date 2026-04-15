@@ -9,7 +9,6 @@ import SummaryCard from '@/components/SummaryCard'
 import TransactionItem from '@/components/TransactionItem'
 import DebtorAdminActions from '@/components/DebtorAdminActions'
 import ThemeToggle from '@/components/ThemeToggle'
-import ClientOnly from '@/components/ClientOnly'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -89,14 +88,12 @@ async function DebtorFinancials({ debtorId, displayMode, canCreatePayment }) {
       <div className="lg:grid lg:grid-cols-[340px_1fr] lg:gap-6 lg:items-start space-y-6 lg:space-y-0">
         {/* Coluna esquerda: ações e configurações */}
         <div className="space-y-6">
-          <ClientOnly>
-            <DebtorAdminActions
-              debtorId={debtorId}
-              displayMode={displayMode}
-              canCreatePayment={canCreatePayment}
-              pendingTransactions={pendingTransactions}
-            />
-          </ClientOnly>
+          <DebtorAdminActions
+            debtorId={debtorId}
+            displayMode={displayMode}
+            canCreatePayment={canCreatePayment}
+            pendingTransactions={pendingTransactions}
+          />
         </div>
 
         {/* Coluna direita: histórico */}
@@ -116,6 +113,7 @@ async function DebtorFinancials({ debtorId, displayMode, canCreatePayment }) {
                   key={t._id}
                   transaction={t}
                   displayMode={displayMode}
+                  showDeleteButton
                 />
               ))}
             </div>

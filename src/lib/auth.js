@@ -1,8 +1,9 @@
-import { auth } from '@/auth'
+import { getServerSession } from 'next-auth'
+import { handler } from '@/auth'
 import { redirect } from 'next/navigation'
 
 export async function getSession() {
-  const session = await auth()
+  const session = await getServerSession(handler)
   if (!session) return null
   return {
     sub: session.user.id,

@@ -8,7 +8,6 @@ import CreateDebtorButton from '@/components/CreateDebtorButton'
 import LogoutButton from '@/components/LogoutButton'
 import EnableNotificationsButton from '@/components/EnableNotificationsButton'
 import ThemeToggle from '@/components/ThemeToggle'
-import ClientOnly from '@/components/ClientOnly'
 import mongoose from 'mongoose'
 
 export const dynamic = 'force-dynamic'
@@ -136,13 +135,9 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground truncate max-w-30 sm:max-w-none">Olá, {session.name}</p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <ClientOnly>
-              <EnableNotificationsButton role="admin" />
-            </ClientOnly>
+            <EnableNotificationsButton role="admin" />
             <ThemeToggle />
-            <ClientOnly>
-              <CreateDebtorButton />
-            </ClientOnly>
+            <CreateDebtorButton />
             <LogoutButton />
           </div>
         </div>

@@ -10,7 +10,6 @@ import DebtorLogoutButton from '@/components/DebtorLogoutButton'
 import InstallPWAButton from '@/components/InstallPWAButton'
 import EnableNotificationsButton from '@/components/EnableNotificationsButton'
 import ThemeToggle from '@/components/ThemeToggle'
-import ClientOnly from '@/components/ClientOnly'
 import { Separator } from '@/components/ui/separator'
 import { formatBRL } from '@/lib/money'
 
@@ -121,12 +120,10 @@ async function DebtorFinancials({ debtor }) {
           )}
 
           {debtor.canCreatePayment && (
-            <ClientOnly>
-              <DebtorPaymentButton
-                debtorCode={debtor.code}
-                debtorId={debtor._id}
-              />
-            </ClientOnly>
+            <DebtorPaymentButton
+              debtorCode={debtor.code}
+              debtorId={debtor._id}
+            />
           )}
         </div>
 
@@ -201,12 +198,8 @@ export default async function DebtorPage({ params }) {
             <p className="text-xs text-muted-foreground font-mono">{debtor.code}</p>
           </div>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            <ClientOnly>
-              <EnableNotificationsButton role="debtor" debtorCode={debtor.code} />
-            </ClientOnly>
-            <ClientOnly>
-              <InstallPWAButton />
-            </ClientOnly>
+            <EnableNotificationsButton role="debtor" debtorCode={debtor.code} />
+            <InstallPWAButton />
             <ThemeToggle />
             <DebtorLogoutButton />
           </div>
