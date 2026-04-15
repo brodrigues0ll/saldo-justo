@@ -1,0 +1,112 @@
+import { requireAdmin } from '@/lib/auth'
+import { connectDB } from '@/lib/db'
+import Debtor from '@/models/Debtor'
+import Transaction from '@/models/Transaction'
+import DebtorCard from '@/components/DebtorCard'
+import CreateDebtorButton from '@/components/CreateDebtorButton'
+import LogoutButton from '@/components/LogoutButton'
+import EnableNotificationsButton from '@/components/EnableNotificationsButton'
+import ThemeToggle from '@/components/ThemeToggle'
+import ClientOnly from '@/components/ClientOnly'
+import mongoose from 'mongoose'
+
+export const dynamic = 'force-dynamic'
+
+async function getDebtorsWithTotals(adminId) {
+  await connectDB()
+  const debtors = await Debtor.find({ createdBy: new mongoose.Types.ObjectId(adminId) }).lean()
+
+  const debtorIds = debtors.map(d => d._id)
+
+  const aggregation = await Transaction.aggregate([
+    { $match: { debtorId: { $in: debtorIds } } },
+    {
+      $group: {
+        _id: '$debtorId',
+        totalDeposits: {
+          $sum: {
+            $cond: [
+              { $and: [{ $eq: ['$type', 'deposit'] }, { $eq: ['$status', 'approved'] }] },
+              '$amount', 0,
+            ],
+          },
+        },
+        totalPaid: {
+          $sum: {
+            $cond: [
+              { $and: [{ $eq: ['$type', 'payment'] }, { $eq: ['$status', 'approved'] }] },
+              '$amount', 0,
+            ],
+          },
+        },
+        pendingCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] },
+        },
+      },
+    },
+  ])
+
+  const totalsMap = {}
+  for (const t of aggregation) {
+    totalsMap[t._id.toString()] = t
+  }
+
+  return debtors.map(d => {
+    const totals = totalsMap[d._id.toString()] || { totalDeposits: 0, totalPaid: 0, pendingCount: 0 }
+    return {
+      ...d,
+      _id: d._id.toString(),
+      createdBy: d.createdBy.toString(),
+      totalDeposits: totals.totalDeposits,
+      totalPaid: totals.totalPaid,
+      pendingCount: totals.pendingCount,
+      balance: totals.totalDeposits - totals.totalPaid,
+    }
+  })
+}
+
+export default async function DashboardPage() {
+  const session = await requireAdmin()
+  const debtors = await getDebtorsWithTotals(session.sub)
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 glass border-b border-border/50 px-6 py-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold gradient-text">Saldo Justo</h1>
+            <p className="text-xs text-muted-foreground">Olá, {session.name}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <ClientOnly>
+              <EnableNotificationsButton role="admin" />
+            </ClientOnly>
+            <ThemeToggle />
+            <ClientOnly>
+              <CreateDebtorButton />
+            </ClientOnly>
+            <LogoutButton />
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-4 py-6">
+        <h2 className="text-base font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+          Devedores
+        </h2>
+        {debtors.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <p>Nenhum devedor cadastrado ainda.</p>
+            <p className="text-sm mt-1">Use o botão acima para adicionar o primeiro.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {debtors.map(debtor => (
+              <DebtorCard key={debtor._id} debtor={debtor} />
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
