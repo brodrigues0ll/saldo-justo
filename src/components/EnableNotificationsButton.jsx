@@ -79,21 +79,22 @@ export default function EnableNotificationsButton({ role, debtorCode }) {
 
   if (status === 'unsupported' || status === 'denied') return null
   if (status === 'enabled') return (
-    <div className="flex items-center gap-1 text-xs text-green-600">
-      <Bell className="w-3 h-3" />
-      <span>Notificações ativas</span>
+    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+      <Bell className="w-3.5 h-3.5" />
+      <span className="hidden sm:inline">Notificações ativas</span>
     </div>
   )
 
   return (
     <Button
-      variant="outline"
-      size="sm"
+      variant="ghost"
+      size="icon"
       onClick={handleEnable}
       disabled={status === 'loading'}
+      className="rounded-full w-9 h-9 hover:bg-primary/10 hover:text-primary"
+      title={status === 'loading' ? 'Ativando...' : 'Ativar notificações'}
     >
-      <Bell className="w-4 h-4 mr-1" />
-      {status === 'loading' ? 'Ativando...' : 'Ativar notificações'}
+      <Bell className="w-4 h-4" />
     </Button>
   )
 }

@@ -45,9 +45,9 @@ export default function CreateDebtorButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="w-4 h-4 mr-1" />
-          Novo Devedor
+        <Button size="icon" className="rounded-full w-9 h-9 sm:w-auto sm:h-auto sm:rounded-md sm:px-3 sm:py-1.5 sm:text-sm" title="Novo Devedor">
+          <Plus className="w-4 h-4 sm:mr-1" />
+          <span className="hidden sm:inline">Novo Devedor</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

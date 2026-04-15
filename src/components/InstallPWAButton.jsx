@@ -28,9 +28,14 @@ export default function InstallPWAButton() {
   if (!canInstall) return null
 
   return (
-    <Button variant="outline" size="sm" onClick={handleInstall}>
-      <Download className="w-4 h-4 mr-1" aria-hidden="true" />
-      Instalar App
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleInstall}
+      className="rounded-full w-9 h-9 hover:bg-primary/10 hover:text-primary"
+      title="Instalar App"
+    >
+      <Download className="w-4 h-4" aria-hidden="true" />
     </Button>
   )
 }

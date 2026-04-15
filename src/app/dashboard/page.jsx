@@ -74,13 +74,11 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 sm:px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image src="/icon-logo.png" alt="Saldo Justo" width={32} height={32} className="invert dark:invert-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">Olá, {session.name}</p>
-            </div>
+          <div className="flex items-center gap-2 min-w-0">
+            <Image src="/icon-logo.png" alt="Saldo Justo" width={32} height={32} className="invert dark:invert-0 shrink-0" />
+            <p className="text-xs text-muted-foreground truncate max-w-30 sm:max-w-none">Olá, {session.name}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 shrink-0">
             <ClientOnly>
               <EnableNotificationsButton role="admin" />
             </ClientOnly>
