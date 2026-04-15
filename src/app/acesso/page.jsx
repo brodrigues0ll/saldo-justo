@@ -1,6 +1,6 @@
 import DebtorAccessForm from '@/components/DebtorAccessForm'
 import InstallPWAButton from '@/components/InstallPWAButton'
-import { Wallet } from 'lucide-react'
+import ClickableLogo from '@/components/ClickableLogo'
 
 export default function AcessoPage() {
   return (
@@ -11,10 +11,15 @@ export default function AcessoPage() {
       </div>
       <div className="relative w-full max-w-sm px-6 z-10">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 glow-primary">
-            <Wallet className="w-7 h-7 text-white" />
+          <div className="flex justify-center mb-4">
+            <ClickableLogo
+              src="/long-logo.png"
+              alt="Saldo Justo"
+              width={180}
+              height={48}
+              className="select-none cursor-default invert dark:invert-0"
+            />
           </div>
-          <h1 className="text-2xl font-bold gradient-text mb-1">Saldo Justo</h1>
           <p className="text-muted-foreground text-sm">Digite seu código para acessar</p>
           <div className="mt-3 flex justify-center">
             <InstallPWAButton />

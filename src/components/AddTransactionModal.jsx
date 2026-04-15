@@ -15,6 +15,7 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
+  const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
 
   const isDebt = displayMode === 'debt'
@@ -26,6 +27,15 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
       ? 'Ex: PIX recebido, dinheiro em mãos...'
       : (isDebt ? 'Ex: Swile Abril, Saco de lixo comprado, ...' : 'Ex: Vale Swile Abril, Bônus...'),
     descRequired: isPayment,
+  }
+
+  function handleOpenChange(val) {
+    setOpen(val)
+    if (!val) {
+      setAmount('')
+      setDescription('')
+      setDate('')
+    }
   }
 
   async function handleSubmit(e) {
@@ -45,6 +55,7 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
           type,
           amount: parsedAmount,
           description: description.trim(),
+          ...(date && { transactionDate: date }),
         }),
       })
       const data = await res.json()
@@ -53,9 +64,7 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
         return
       }
       toast.success(`${labels.title} registrado com sucesso`)
-      setOpen(false)
-      setAmount('')
-      setDescription('')
+      handleOpenChange(false)
       router.refresh()
     } catch {
       toast.error('Erro de conexão')
@@ -65,7 +74,7 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -92,8 +101,20 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
               disabled={loading}
             />
           </div>
+          <div className="space-y-2">
+            <Label>
+              Data <span className="text-neutral-400 font-normal">(opcional)</span>
+            </Label>
+            <Input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              disabled={loading}
+              max={new Date().toISOString().split('T')[0]}
+            />
+          </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={loading}>
               Cancelar
             </Button>
             <Button type="submit" disabled={loading}>

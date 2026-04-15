@@ -1,9 +1,9 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
-import AdminLoginForm from '@/components/AdminLoginForm'
+import RegisterForm from '@/components/RegisterForm'
 import Image from 'next/image'
 
-export default async function LoginPage() {
+export default async function CadastroPage() {
   const session = await auth()
   if (session) redirect('/dashboard')
 
@@ -26,9 +26,9 @@ export default async function LoginPage() {
               priority
             />
           </div>
-          <p className="text-muted-foreground text-sm">Acesso administrativo</p>
+          <p className="text-muted-foreground text-sm">Crie sua conta gratuita</p>
         </div>
-        <AdminLoginForm />
+        <RegisterForm />
       </div>
     </div>
   )

@@ -20,7 +20,17 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
+  const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
+
+  function handleOpenChange(val) {
+    setOpen(val)
+    if (!val) {
+      setAmount('')
+      setDescription('')
+      setDate('')
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -39,7 +49,8 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
           type: 'payment',
           amount: parsedAmount,
           description,
-          debtorCode, // autorização do devedor
+          debtorCode,
+          ...(date && { transactionDate: date }),
         }),
       })
       const data = await res.json()
@@ -48,9 +59,7 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
         return
       }
       toast.success('Pagamento registrado! Aguardando aprovação do admin.')
-      setOpen(false)
-      setAmount('')
-      setDescription('')
+      handleOpenChange(false)
       router.refresh()
     } catch {
       toast.error('Erro de conexão')
@@ -60,7 +69,7 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-full" size="lg">
           <Plus className="w-4 h-4 mr-2" />
@@ -93,11 +102,23 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
               disabled={loading}
             />
           </div>
+          <div className="space-y-2">
+            <Label>
+              Data <span className="text-neutral-400 font-normal">(opcional)</span>
+            </Label>
+            <Input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              disabled={loading}
+              max={new Date().toISOString().split('T')[0]}
+            />
+          </div>
           <div className="flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => handleOpenChange(false)}
               disabled={loading}
             >
               Cancelar

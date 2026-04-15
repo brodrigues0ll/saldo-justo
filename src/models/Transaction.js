@@ -14,6 +14,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     approvedAt: { type: Date },
     rejectionReason: { type: String },
+    transactionDate: { type: Date },
   },
   { timestamps: true }
 )

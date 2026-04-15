@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/auth'
 import { connectDB } from '@/lib/db'
+import Image from 'next/image'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
 import DebtorCard from '@/components/DebtorCard'
@@ -73,9 +74,11 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 glass border-b border-border/50 px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold gradient-text">Saldo Justo</h1>
-            <p className="text-xs text-muted-foreground">Olá, {session.name}</p>
+          <div className="flex items-center gap-2">
+            <Image src="/icon-logo.png" alt="Saldo Justo" width={32} height={32} className="invert dark:invert-0" />
+            <div>
+              <p className="text-xs text-muted-foreground">Olá, {session.name}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <ClientOnly>

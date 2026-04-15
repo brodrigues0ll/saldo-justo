@@ -11,7 +11,7 @@ export async function POST(request) {
   await connectDB()
 
   const body = await request.json()
-  const { debtorId, type, amount, description, debtorCode } = body
+  const { debtorId, type, amount, description, debtorCode, transactionDate } = body
 
   // Arredondar para 2 casas decimais antes de validar (evita imprecisão de float)
   const safeAmount = typeof amount === 'number' ? Math.round(amount * 100) / 100 : amount
@@ -63,6 +63,9 @@ export async function POST(request) {
     return jsonError('Não autenticado', 401)
   }
 
+  const parsedDate = transactionDate ? new Date(transactionDate) : undefined
+  const safeTransactionDate = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate : undefined
+
   const transaction = await Transaction.create({
     debtorId: resolvedDebtorId,
     type,
@@ -71,6 +74,7 @@ export async function POST(request) {
     createdBy,
     status,
     ...(approvedAt && { approvedAt }),
+    ...(safeTransactionDate && { transactionDate: safeTransactionDate }),
   })
 
   // Fire-and-forget — não bloqueia a resposta

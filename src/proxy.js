@@ -9,7 +9,7 @@ export const proxy = auth(function proxyHandler(request) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (pathname === '/login' && session) {
+  if ((pathname === '/login' || pathname === '/cadastro') && session) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
@@ -17,5 +17,5 @@ export const proxy = auth(function proxyHandler(request) {
 })
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: ['/dashboard/:path*', '/login', '/cadastro'],
 }
