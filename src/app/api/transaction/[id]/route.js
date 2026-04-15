@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import { revalidatePath } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import { jsonOk, jsonError } from '@/lib/api-helpers'
 import { getSession } from '@/lib/auth'
@@ -35,6 +34,5 @@ export async function DELETE(request, context) {
   if (!transaction) return jsonError('Transação não encontrada', 404)
 
   await transaction.deleteOne()
-  revalidatePath('/dashboard')
   return jsonOk({ message: 'Transação excluída com sucesso' })
 }

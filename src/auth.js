@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { connectDB } from '@/lib/db'
 import User from '@/models/User'
 
-export const handler = NextAuth({
+export const authOptions = {
   providers: [
     Credentials({
       credentials: {
@@ -54,4 +54,6 @@ export const handler = NextAuth({
       return session
     },
   },
-})
+}
+
+export const handler = NextAuth(authOptions)

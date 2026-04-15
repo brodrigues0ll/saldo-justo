@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import { revalidatePath } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import { jsonOk, jsonError } from '@/lib/api-helpers'
 import { getSession } from '@/lib/auth'
@@ -59,6 +58,5 @@ export async function POST(request) {
     canCreatePayment: false,
   })
 
-  revalidatePath('/dashboard')
   return jsonOk(debtor, 201)
 }

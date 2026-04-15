@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { formatBRL } from "@/lib/money";
 import { ChevronRight, AlertCircle } from "lucide-react";
 import GlassCard from "@/components/GlassCard";
+import DeleteDebtorButton from "@/components/DeleteDebtorButton";
 
 export default function DebtorCard({ debtor }) {
   const { _id, name, code, balance, pendingCount, totalDeposits, totalPaid } =
@@ -27,6 +28,9 @@ export default function DebtorCard({ debtor }) {
                 {pendingCount}
               </span>
             )}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <DeleteDebtorButton debtorId={_id} />
+            </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
           </div>
         </div>
