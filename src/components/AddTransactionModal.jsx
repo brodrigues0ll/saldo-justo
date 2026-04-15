@@ -65,6 +65,10 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
       }
       toast.success(`${labels.title} registrado com sucesso`)
       handleOpenChange(false)
+      // Tenta chamar refresh das transações no cliente primeiro
+      if (typeof window !== 'undefined' && window.__refreshTransactions) {
+        await window.__refreshTransactions()
+      }
       router.refresh()
     } catch {
       toast.error('Erro de conexão')

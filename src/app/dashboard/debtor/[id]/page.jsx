@@ -3,12 +3,12 @@ import { connectDB } from '@/lib/db'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import mongoose from 'mongoose'
 import SummaryCard from '@/components/SummaryCard'
-import TransactionItem from '@/components/TransactionItem'
 import DebtorAdminActions from '@/components/DebtorAdminActions'
+import TransactionHistory from '@/components/TransactionHistory'
 import ThemeToggle from '@/components/ThemeToggle'
-import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -58,6 +58,7 @@ async function getDebtorData(id) {
 }
 
 export default async function DebtorDetailPage({ params }) {
+  await cookies() // sinaliza ao Next.js que essa rota depende de cookies (opt-out de cache estático)
   const { id } = await params
   const [, data] = await Promise.all([requireAdmin(), getDebtorData(id)])
 
@@ -70,7 +71,7 @@ export default async function DebtorDetailPage({ params }) {
     : { credit: 'Depositado', paid: 'Pago', balance: 'Saldo' }
 
   const pendingTransactions = transactions.filter(t => t.status === 'pending')
-  const historyTransactions = transactions.filter(t => t.status !== 'pending')
+  const historyTransactions = transactions.filter(t => t.status === 'approved')
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,28 +107,11 @@ export default async function DebtorDetailPage({ params }) {
             />
           </div>
 
-          <div>
-            <Separator className="lg:hidden" />
-            <h3 className="font-semibold mb-3 text-foreground mt-6 lg:mt-0">
-              Histórico de transações
-            </h3>
-            {historyTransactions.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                Nenhuma transação registrada ainda.
-              </p>
-            ) : (
-              <div>
-                {historyTransactions.map(t => (
-                  <TransactionItem
-                    key={t._id}
-                    transaction={t}
-                    displayMode={debtor.displayMode}
-                    showDeleteButton
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          <TransactionHistory
+            initialTransactions={historyTransactions}
+            displayMode={debtor.displayMode}
+            debtorId={debtor._id}
+          />
         </div>
       </main>
     </div>

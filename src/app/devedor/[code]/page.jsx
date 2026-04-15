@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { connectDB } from '@/lib/db'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
@@ -68,6 +69,7 @@ async function getDebtorData(code) {
 }
 
 export default async function DebtorPage({ params }) {
+  await cookies() // sinaliza ao Next.js que essa rota depende de cookies (opt-out de cache estático)
   const { code } = await params
   const data = await getDebtorData(code)
 
@@ -81,7 +83,7 @@ export default async function DebtorPage({ params }) {
     : { credit: 'Depositado', paid: 'Pago', balance: 'Saldo' }
 
   const pendingTransactions = transactions.filter(t => t.status === 'pending')
-  const approvedTransactions = transactions.filter(t => t.status !== 'pending')
+  const approvedTransactions = transactions.filter(t => t.status === 'approved')
 
   return (
     <div className="min-h-screen bg-background">

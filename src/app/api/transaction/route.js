@@ -63,7 +63,10 @@ export async function POST(request) {
     return jsonError('Não autenticado', 401)
   }
 
-  const parsedDate = transactionDate ? new Date(transactionDate) : undefined
+  const parsedDate = transactionDate ? (() => {
+    const [year, month, day] = transactionDate.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  })() : undefined
   const safeTransactionDate = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate : undefined
 
   const transaction = await Transaction.create({
