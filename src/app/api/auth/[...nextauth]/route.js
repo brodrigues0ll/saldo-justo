@@ -1,3 +1,4 @@
 import { handler } from '@/auth'
 
-export default handler
+export const GET = handler
+export const POST = handler
