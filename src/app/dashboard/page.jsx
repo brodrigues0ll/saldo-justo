@@ -1,6 +1,8 @@
 import { requireAdmin } from '@/lib/auth'
 import { connectDB } from '@/lib/db'
 import Image from 'next/image'
+import { cookies } from 'next/headers'
+import mongoose from 'mongoose'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
 import DebtorCard from '@/components/DebtorCard'
@@ -8,7 +10,6 @@ import CreateDebtorButton from '@/components/CreateDebtorButton'
 import LogoutButton from '@/components/LogoutButton'
 import EnableNotificationsButton from '@/components/EnableNotificationsButton'
 import ThemeToggle from '@/components/ThemeToggle'
-import mongoose from 'mongoose'
 
 async function getDebtors(adminId) {
   await connectDB()
@@ -53,6 +54,7 @@ async function getDebtors(adminId) {
 }
 
 export default async function DashboardPage() {
+  await cookies()
   const session = await requireAdmin()
   const debtors = await getDebtors(session.sub)
 

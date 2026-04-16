@@ -1,29 +1,21 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useEffect } from 'react'
+import { useFetch } from '@/lib/useFetch'
 import TransactionItem from '@/components/TransactionItem'
 import { Separator } from '@/components/ui/separator'
 
 export default function TransactionHistory({ initialTransactions, displayMode, debtorId }) {
-  const [transactions, setTransactions] = useState(initialTransactions)
+  const { data, refetch } = useFetch(`/api/debtor/${debtorId}`)
 
-  const refreshTransactions = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/debtor/${debtorId}`)
-      if (!res.ok) return
-      const data = await res.json()
-      const approved = data.transactions?.filter(t => t.status !== 'pending') || []
-      setTransactions(approved)
-    } catch (error) {
-      console.error('Erro ao atualizar transações:', error)
+  // Expor refetch globalmente para AddTransactionModal chamar
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__refetchTransactions = refetch
     }
-  }, [debtorId])
+  }, [refetch])
 
-  // Expor função de refresh globalmente para que AddTransactionModal possa chamar
-  if (typeof window !== 'undefined' && !window.__refreshTransactions) {
-    window.__refreshTransactions = refreshTransactions
-  }
-
-  const historyTransactions = transactions.length
+  // Usar dados da API se disponível, senão usar inicial
+  const transactions = data?.transactions?.filter(t => t.status === 'approved') || initialTransactions
 
   return (
     <div>
@@ -31,7 +23,7 @@ export default function TransactionHistory({ initialTransactions, displayMode, d
       <h3 className="font-semibold mb-3 text-foreground mt-6 lg:mt-0">
         Histórico de transações
       </h3>
-      {historyTransactions === 0 ? (
+      {transactions.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-8">
           Nenhuma transação registrada ainda.
         </p>

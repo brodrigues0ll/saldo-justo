@@ -69,7 +69,7 @@ async function getDebtorData(code) {
 }
 
 export default async function DebtorPage({ params }) {
-  await cookies() // sinaliza ao Next.js que essa rota depende de cookies (opt-out de cache estático)
+  await cookies()
   const { code } = await params
   const data = await getDebtorData(code)
 
