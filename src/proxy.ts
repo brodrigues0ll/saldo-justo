@@ -1,21 +1,11 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const token = request.cookies.get('next-auth.session-token')?.value
-
-  if (pathname.startsWith('/dashboard') && !token) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  if ((pathname === '/login' || pathname === '/cadastro') && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
+export function proxy() {
+  // Não fazer redirect no proxy - deixar as páginas validarem via requireAdmin()
+  // Isso evita loops de redirect em produção
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/cadastro'],
+  matcher: ['/dashboard/:path*', '/login', '/cadastro', '/devedor/:path*', '/acesso/:path*'],
 }
