@@ -1,38 +1,20 @@
 'use client'
-import { useEffect, useState } from 'react'
 import SummaryCard from '@/components/SummaryCard'
 import TransactionItem from '@/components/TransactionItem'
 import DebtorAdminActions from '@/components/DebtorAdminActions'
 import { Separator } from '@/components/ui/separator'
+import { useLocalFirst } from '@/lib/useLocalFirst'
 
 export default function DebtorView({ debtorId }) {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { data, sync } = useLocalFirst(
+    `/api/debtor/${debtorId}`,
+    `debtor:${debtorId}`,
+    debtorId
+  )
 
-  async function load() {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/debtor/${debtorId}`)
-      const json = await res.json()
-      setData(json)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    load()
-  }, [debtorId])
-
-  function removeTransaction(transactionId) {
-    setData(prev => ({
-      ...prev,
-      transactions: prev.transactions.filter(t => t._id.toString() !== transactionId),
-    }))
-  }
-
-  if (loading) return (
+  if (!data) return (
     <div className="space-y-6">
+      <div className="h-6 w-48 bg-muted/30 rounded animate-pulse" />
       <div className="flex flex-col sm:flex-row gap-4">
         {[0, 1, 2].map(i => (
           <div key={i} className="flex-1 h-24 bg-muted/30 rounded-2xl animate-pulse" />
@@ -41,8 +23,6 @@ export default function DebtorView({ debtorId }) {
       <div className="h-48 bg-muted/20 rounded-2xl animate-pulse" />
     </div>
   )
-
-  if (!data) return null
 
   const { totalDeposits, totalPaid, balance, transactions = [], displayMode, canCreatePayment } = data
   const isDebtMode = displayMode === 'debt'
@@ -73,7 +53,7 @@ export default function DebtorView({ debtorId }) {
             displayMode={displayMode}
             canCreatePayment={canCreatePayment}
             pendingTransactions={pendingTransactions}
-            onSuccess={load}
+            onSuccess={sync}
           />
         </div>
 
@@ -94,7 +74,7 @@ export default function DebtorView({ debtorId }) {
                   transaction={t}
                   displayMode={displayMode}
                   showDeleteButton
-                  onDelete={removeTransaction}
+                  onDelete={sync}
                 />
               ))}
             </div>

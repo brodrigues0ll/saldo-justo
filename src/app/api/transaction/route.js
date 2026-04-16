@@ -6,6 +6,7 @@ import { validateTransaction } from '@/lib/validators'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
 import { notifyAdminNewPayment, notifyDebtorNewDeposit } from '@/lib/push'
+import { wsBroadcast } from '@/lib/ws-broadcast'
 
 export async function POST(request) {
   await connectDB()
@@ -95,6 +96,11 @@ export async function POST(request) {
       description: safeDescription,
     }).catch(console.error)
   }
+
+  wsBroadcast(resolvedDebtorId, {
+    type: 'tx:insert',
+    payload: JSON.parse(JSON.stringify(transaction)),
+  })
 
   return jsonOk(transaction, 201)
 }

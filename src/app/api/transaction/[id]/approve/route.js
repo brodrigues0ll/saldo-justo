@@ -4,6 +4,7 @@ import { jsonOk, jsonError } from '@/lib/api-helpers'
 import { getSession } from '@/lib/auth'
 import Transaction from '@/models/Transaction'
 import { notifyDebtorPaymentApproved } from '@/lib/push'
+import { wsBroadcast } from '@/lib/ws-broadcast'
 
 export async function POST(request, context) {
   const session = await getSession()
@@ -29,6 +30,11 @@ export async function POST(request, context) {
   transaction.status = 'approved'
   transaction.approvedAt = new Date()
   await transaction.save()
+
+  wsBroadcast(transaction.debtorId, {
+    type: 'tx:update',
+    payload: JSON.parse(JSON.stringify(transaction)),
+  })
 
   // Fire-and-forget — não bloqueia a resposta
   notifyDebtorPaymentApproved({

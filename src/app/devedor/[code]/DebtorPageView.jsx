@@ -1,45 +1,34 @@
 'use client'
-import { useEffect, useState } from 'react'
 import SummaryCard from '@/components/SummaryCard'
 import TransactionItem from '@/components/TransactionItem'
 import DebtorPaymentButton from '@/components/DebtorPaymentButton'
 import { Separator } from '@/components/ui/separator'
 import { formatBRL } from '@/lib/money'
+import { useLocalFirst } from '@/lib/useLocalFirst'
 
 export default function DebtorPageView({ debtorCode }) {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { data, sync } = useLocalFirst(
+    `/api/debtor/by-code/${debtorCode}`,
+    `debtor-code:${debtorCode}`
+    // debtorId não é conhecido ainda — será resolvido após o primeiro fetch
+  )
 
-  async function load() {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/debtor/by-code/${debtorCode}`)
-      const json = await res.json()
-      setData(json)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    load()
-  }, [debtorCode])
-
-  if (loading) return (
+  if (!data) return (
     <div className="space-y-6">
       <div className="h-6 w-40 bg-muted/30 rounded animate-pulse" />
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[0, 1, 2].map(i => (
-          <div key={i} className="flex-1 h-24 bg-muted/30 rounded-2xl animate-pulse" />
+          <div key={i} className="h-24 bg-muted/30 rounded-2xl animate-pulse" />
         ))}
       </div>
       <div className="h-48 bg-muted/20 rounded-2xl animate-pulse" />
     </div>
   )
 
-  if (!data) return null
-
-  const { name, code, canCreatePayment, displayMode = 'deposit', totalDeposits, totalPaid, balance, transactions = [] } = data
+  const {
+    _id, name, code, canCreatePayment, displayMode = 'deposit',
+    totalDeposits, totalPaid, balance, transactions = [],
+  } = data
 
   const isDebtMode = displayMode === 'debt'
   const labels = isDebtMode
@@ -48,7 +37,7 @@ export default function DebtorPageView({ debtorCode }) {
 
   const pendingTransactions = transactions.filter(t => t.status === 'pending')
   const approvedTransactions = transactions.filter(t => t.status === 'approved')
-  const pendingAmount = pendingTransactions.reduce((sum, t) => sum + t.amount, 0)
+  const pendingAmount = pendingTransactions.reduce((s, t) => s + t.amount, 0)
 
   return (
     <>
@@ -83,7 +72,7 @@ export default function DebtorPageView({ debtorCode }) {
           )}
 
           {canCreatePayment && (
-            <DebtorPaymentButton debtorCode={code} debtorId={data._id} onSuccess={load} />
+            <DebtorPaymentButton debtorCode={code} debtorId={_id} onSuccess={sync} />
           )}
         </div>
 

@@ -7,6 +7,7 @@ import mongoose from 'mongoose'
 import Debtor from '@/models/Debtor'
 import Transaction from '@/models/Transaction'
 import PushSubscription from '@/models/PushSubscription'
+import { wsBroadcast } from '@/lib/ws-broadcast'
 
 export async function GET(request, context) {
   const session = await getSession()
@@ -61,6 +62,11 @@ export async function PATCH(request, context) {
 
   const debtor = await Debtor.findByIdAndUpdate(id, updates, { returnDocument: 'after', runValidators: true })
   if (!debtor) return jsonError('Devedor não encontrado', 404)
+
+  wsBroadcast(id, {
+    type: 'debtor:update',
+    payload: { displayMode: debtor.displayMode, canCreatePayment: debtor.canCreatePayment, name: debtor.name },
+  })
 
   return jsonOk(debtor)
 }

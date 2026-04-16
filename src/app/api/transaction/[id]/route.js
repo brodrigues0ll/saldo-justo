@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db'
 import { jsonOk, jsonError } from '@/lib/api-helpers'
 import { getSession } from '@/lib/auth'
 import Transaction from '@/models/Transaction'
+import { wsBroadcast } from '@/lib/ws-broadcast'
 
 export async function GET(request, context) {
   const session = await getSession()
@@ -33,6 +34,11 @@ export async function DELETE(request, context) {
   const transaction = await Transaction.findById(id)
   if (!transaction) return jsonError('Transação não encontrada', 404)
 
+  const debtorId = transaction.debtorId.toString()
+  const transactionId = transaction._id.toString()
   await transaction.deleteOne()
+
+  wsBroadcast(debtorId, { type: 'tx:delete', payload: { _id: transactionId } })
+
   return jsonOk({ message: 'Transação excluída com sucesso' })
 }
