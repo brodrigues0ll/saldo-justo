@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -10,6 +11,7 @@ import { toast } from 'sonner'
 import MoneyInput, { parseMoneyValue } from '@/components/MoneyInput'
 
 export default function AddTransactionModal({ debtorId, type, displayMode = 'deposit', children }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
@@ -63,10 +65,8 @@ export default function AddTransactionModal({ debtorId, type, displayMode = 'dep
       }
       toast.success(`${labels.title} registrado com sucesso`)
       handleOpenChange(false)
-      // Refetch dados no cliente via função exposta pelo componente
-      if (typeof window !== 'undefined' && window.__refetchDebtor) {
-        await window.__refetchDebtor()
-      }
+      // Refazer requisição da página
+      router.refresh()
     } catch {
       toast.error('Erro de conexão')
     } finally {

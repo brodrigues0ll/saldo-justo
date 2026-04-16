@@ -13,6 +13,9 @@ import ThemeToggle from '@/components/ThemeToggle'
 import { Separator } from '@/components/ui/separator'
 import { formatBRL } from '@/lib/money'
 
+// Sempre refazer requisição, sem cache
+export const revalidate = 0
+
 function computeTotals(transactions) {
   let totalDeposits = 0
   let totalPaid = 0

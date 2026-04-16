@@ -14,6 +14,9 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
+// Sempre refazer requisição, sem cache
+export const revalidate = 0
+
 function computeTotals(transactions) {
   let totalDeposits = 0, totalPaid = 0, pendingCount = 0, pendingAmount = 0
   for (const t of transactions) {
@@ -33,9 +36,11 @@ async function getDebtorData(id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) return null
 
+  const debtorId = new mongoose.Types.ObjectId(id)
+
   const [debtor, rawTransactions] = await Promise.all([
-    Debtor.findById(id).lean(),
-    Transaction.find({ debtorId: id }).sort({ createdAt: -1 }).lean(),
+    Debtor.findById(debtorId).lean(),
+    Transaction.find({ debtorId }).sort({ createdAt: -1 }).lean(),
   ])
 
   if (!debtor) return null
