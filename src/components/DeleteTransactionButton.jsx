@@ -1,12 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function DeleteTransactionButton({ transactionId, onDelete }) {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   async function handleDelete() {
@@ -26,8 +24,8 @@ export default function DeleteTransactionButton({ transactionId, onDelete }) {
         return
       }
       toast.success('Transação deletada')
-      router.refresh()
-      onDelete?.()
+      if (onDelete) onDelete(transactionId)
+      else window.location.reload()
     } catch {
       toast.error('Erro de conexão')
     } finally {

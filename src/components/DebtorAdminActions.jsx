@@ -14,6 +14,7 @@ export default function DebtorAdminActions({
   displayMode,
   canCreatePayment,
   pendingTransactions,
+  onSuccess,
 }) {
   const isDebtMode = displayMode === 'debt'
 
@@ -35,7 +36,7 @@ export default function DebtorAdminActions({
                   </p>
                 </div>
                 <div className="shrink-0">
-                  <ApproveRejectButtons transactionId={t._id} />
+                  <ApproveRejectButtons transactionId={t._id} onSuccess={onSuccess} />
                 </div>
               </div>
             ))}
@@ -45,13 +46,13 @@ export default function DebtorAdminActions({
 
       {/* Botões de ação */}
       <div className="flex gap-2">
-        <AddTransactionModal debtorId={debtorId} type="deposit" displayMode={displayMode}>
+        <AddTransactionModal debtorId={debtorId} type="deposit" displayMode={displayMode} onSuccess={onSuccess}>
           <Button variant="outline" className="flex-1 min-w-0">
             <Plus className="w-4 h-4 mr-1 shrink-0" />
             <span className="truncate">{isDebtMode ? 'Nova Dívida' : 'Depósito'}</span>
           </Button>
         </AddTransactionModal>
-        <AddTransactionModal debtorId={debtorId} type="payment" displayMode={displayMode}>
+        <AddTransactionModal debtorId={debtorId} type="payment" displayMode={displayMode} onSuccess={onSuccess}>
           <Button variant="outline" className="flex-1 min-w-0">
             <Plus className="w-4 h-4 mr-1 shrink-0" />
             <span className="truncate">Pagamento</span>
@@ -63,9 +64,9 @@ export default function DebtorAdminActions({
 
       {/* Configurações */}
       <div className="space-y-4">
-        <DisplayModeToggle debtorId={debtorId} initialMode={displayMode} />
+        <DisplayModeToggle debtorId={debtorId} initialMode={displayMode} onSuccess={onSuccess} />
         <Separator />
-        <CanCreatePaymentToggle debtorId={debtorId} initialValue={canCreatePayment} />
+        <CanCreatePaymentToggle debtorId={debtorId} initialValue={canCreatePayment} onSuccess={onSuccess} />
       </div>
     </>
   )

@@ -1,11 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
-export default function ApproveRejectButtons({ transactionId }) {
-  const router = useRouter()
+export default function ApproveRejectButtons({ transactionId, onSuccess }) {
   const [loading, setLoading] = useState(null) // 'approve' | 'reject' | null
 
   async function handleAction(action) {
@@ -21,7 +19,8 @@ export default function ApproveRejectButtons({ transactionId }) {
         return
       }
       toast.success(action === 'approve' ? 'Pagamento aprovado' : 'Pagamento rejeitado')
-      router.refresh()
+      if (onSuccess) onSuccess()
+      else window.location.reload()
     } catch {
       toast.error('Erro de conexão')
     } finally {

@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,8 +14,7 @@ import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 import MoneyInput, { parseMoneyValue } from '@/components/MoneyInput'
 
-export default function DebtorPaymentButton({ debtorCode, debtorId }) {
-  const router = useRouter()
+export default function DebtorPaymentButton({ debtorCode, debtorId, onSuccess }) {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
@@ -60,7 +58,8 @@ export default function DebtorPaymentButton({ debtorCode, debtorId }) {
       }
       toast.success('Pagamento registrado! Aguardando aprovação do admin.')
       handleOpenChange(false)
-      router.refresh()
+      if (onSuccess) onSuccess()
+      else window.location.reload()
     } catch {
       toast.error('Erro de conexão')
     } finally {

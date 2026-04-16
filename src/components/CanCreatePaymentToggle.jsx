@@ -1,12 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 
-export default function CanCreatePaymentToggle({ debtorId, initialValue }) {
-  const router = useRouter()
+export default function CanCreatePaymentToggle({ debtorId, initialValue, onSuccess }) {
   const [enabled, setEnabled] = useState(initialValue)
   const [loading, setLoading] = useState(false)
 
@@ -25,7 +23,8 @@ export default function CanCreatePaymentToggle({ debtorId, initialValue }) {
         return
       }
       toast.success(value ? 'Devedor pode registrar pagamentos' : 'Devedor não pode mais registrar pagamentos')
-      router.refresh()
+      if (onSuccess) onSuccess()
+      else window.location.reload()
     } catch {
       setEnabled(!value)
       toast.error('Erro de conexão')

@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -11,7 +10,6 @@ import { toast } from 'sonner'
 import { Plus } from 'lucide-react'
 
 export default function CreateDebtorButton() {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [canCreatePayment, setCanCreatePayment] = useState(false)
@@ -34,7 +32,7 @@ export default function CreateDebtorButton() {
       toast.success(`Devedor criado! Código: ${data.code}`)
       setOpen(false)
       setName('')
-      router.refresh()
+      window.location.reload()
     } catch {
       toast.error('Erro de conexão')
     } finally {

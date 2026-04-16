@@ -9,7 +9,7 @@ const statusConfig = {
   rejected: { label: 'Rejeitado', className: 'bg-red-500/10 text-red-500 border-red-500/20' },
 }
 
-export default function TransactionItem({ transaction, displayMode = 'deposit', showDeleteButton = false }) {
+export default function TransactionItem({ transaction, displayMode = 'deposit', showDeleteButton = false, onDelete }) {
   const { type, amount, description, status, createdBy, createdAt, transactionDate, _id: transactionId } = transaction
   const st = statusConfig[status] || statusConfig.approved
   const isDeposit = type === 'deposit'
@@ -62,7 +62,7 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
       {/* Delete button (admin) */}
       {showDeleteButton && (
         <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <DeleteTransactionButton transactionId={transactionId} />
+          <DeleteTransactionButton transactionId={transactionId} onDelete={onDelete} />
         </div>
       )}
 

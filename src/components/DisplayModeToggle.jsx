@@ -1,11 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Label } from '@/components/ui/label'
 
-export default function DisplayModeToggle({ debtorId, initialMode }) {
-  const router = useRouter()
+export default function DisplayModeToggle({ debtorId, initialMode, onSuccess }) {
   const [mode, setMode] = useState(initialMode || 'deposit')
   const [loading, setLoading] = useState(false)
 
@@ -26,7 +24,8 @@ export default function DisplayModeToggle({ debtorId, initialMode }) {
         return
       }
       toast.success(newMode === 'deposit' ? 'Modo: Depósito / Crédito' : 'Modo: Saldo Devedor')
-      router.refresh()
+      if (onSuccess) onSuccess()
+      else window.location.reload()
     } catch {
       setMode(prevMode)
       toast.error('Erro de conexão')

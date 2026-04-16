@@ -59,7 +59,7 @@ export async function PATCH(request, context) {
 
   if (Object.keys(updates).length === 0) return jsonError('Nenhum campo para atualizar', 422)
 
-  const debtor = await Debtor.findByIdAndUpdate(id, updates, { new: true, runValidators: true })
+  const debtor = await Debtor.findByIdAndUpdate(id, updates, { returnDocument: 'after', runValidators: true })
   if (!debtor) return jsonError('Devedor não encontrado', 404)
 
   return jsonOk(debtor)
