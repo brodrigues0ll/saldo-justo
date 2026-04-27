@@ -1,11 +1,11 @@
 import { requireAdmin } from '@/lib/auth'
-import ThemeToggle from '@/components/ThemeToggle'
 import Link from 'next/link'
-import { ArrowLeft, Settings } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import DebtorView from './DebtorView'
+import ThemeToggle from '@/components/ThemeToggle'
+import DebtorSettingsView from './DebtorSettingsView'
 
-export default async function DebtorDetailPage({ params }) {
+export default async function DebtorSettingsPage({ params }) {
   const { id } = await params
   await requireAdmin()
 
@@ -13,23 +13,18 @@ export default async function DebtorDetailPage({ params }) {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 sm:px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <Link href="/dashboard">
+          <Link href={`/dashboard/debtor/${id}`}>
             <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary">
               <ArrowLeft className="w-4 h-4" />
             </Button>
           </Link>
-          <div className="flex-1 min-w-0" />
-          <Link href={`/dashboard/debtor/${id}/settings`}>
-            <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 hover:text-primary">
-              <Settings className="w-4 h-4" />
-            </Button>
-          </Link>
+          <span className="font-semibold text-sm flex-1">Configurações do Devedor</span>
           <ThemeToggle />
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        <DebtorView debtorId={id} />
+        <DebtorSettingsView debtorId={id} />
       </main>
     </div>
   )

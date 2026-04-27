@@ -28,9 +28,7 @@ export default function DebtorCard({ debtor }) {
                 {pendingCount}
               </span>
             )}
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <DeleteDebtorButton debtorId={_id} />
-            </div>
+
             <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
           </div>
         </div>

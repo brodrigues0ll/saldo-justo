@@ -1,18 +1,14 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
 import AddTransactionModal from '@/components/AddTransactionModal'
 import ApproveRejectButtons from '@/components/ApproveRejectButtons'
-import CanCreatePaymentToggle from '@/components/CanCreatePaymentToggle'
-import DisplayModeToggle from '@/components/DisplayModeToggle'
 import { formatBRL } from '@/lib/money'
 
 export default function DebtorAdminActions({
   debtorId,
   displayMode,
-  canCreatePayment,
   pendingTransactions,
   onSuccess,
 }) {
@@ -58,15 +54,6 @@ export default function DebtorAdminActions({
             <span className="truncate">Pagamento</span>
           </Button>
         </AddTransactionModal>
-      </div>
-
-      <Separator />
-
-      {/* Configurações */}
-      <div className="space-y-4">
-        <DisplayModeToggle debtorId={debtorId} initialMode={displayMode} onSuccess={onSuccess} />
-        <Separator />
-        <CanCreatePaymentToggle debtorId={debtorId} initialValue={canCreatePayment} onSuccess={onSuccess} />
       </div>
     </>
   )

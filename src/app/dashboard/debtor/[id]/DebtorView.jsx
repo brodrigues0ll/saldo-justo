@@ -53,7 +53,6 @@ export default function DebtorView({ debtorId }) {
           <DebtorAdminActions
             debtorId={debtorId}
             displayMode={displayMode}
-            canCreatePayment={canCreatePayment}
             pendingTransactions={pendingTransactions}
             onSuccess={sync}
           />
