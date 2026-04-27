@@ -64,11 +64,11 @@ export async function POST(request) {
     return jsonError('Não autenticado', 401)
   }
 
-  const parsedDate = transactionDate ? (() => {
+  const safeTransactionDate = transactionDate ? (() => {
     const [year, month, day] = transactionDate.split('-').map(Number)
-    return new Date(year, month - 1, day)
+    const d = new Date(Date.UTC(year, month - 1, day))
+    return isNaN(d.getTime()) ? undefined : d
   })() : undefined
-  const safeTransactionDate = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate : undefined
 
   const transaction = await Transaction.create({
     debtorId: resolvedDebtorId,

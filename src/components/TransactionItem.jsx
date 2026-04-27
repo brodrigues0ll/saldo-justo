@@ -14,8 +14,11 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
   const st = statusConfig[status] || statusConfig.approved
   const isDeposit = type === 'deposit'
   const depositLabel = displayMode === 'debt' ? 'Dívida' : 'Depósito'
-  const displayDate = transactionDate || createdAt
-  const date = new Date(displayDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })
+  // transactionDate é armazenado como UTC midnight → exibir em UTC para não perder um dia
+  // createdAt é um timestamp real → exibir no timezone local do usuário
+  const date = transactionDate
+    ? new Date(transactionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit', timeZone: 'UTC' })
+    : new Date(createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })
 
   return (
     <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0 group transition-colors hover:bg-primary/5 -mx-2 px-2 rounded-lg">
