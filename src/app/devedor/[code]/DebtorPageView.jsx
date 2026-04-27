@@ -1,10 +1,26 @@
 'use client'
+import { useState } from 'react'
 import SummaryCard from '@/components/SummaryCard'
 import TransactionItem from '@/components/TransactionItem'
 import DebtorPaymentButton from '@/components/DebtorPaymentButton'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { formatBRL } from '@/lib/money'
 import { useLocalFirst } from '@/lib/useLocalFirst'
+
+function getTxMonth(t) {
+  if (t.transactionDate) {
+    const [y, m] = t.transactionDate.split('T')[0].split('-').map(Number)
+    return `${y}-${m - 1}`
+  }
+  const d = new Date(t.createdAt)
+  return `${d.getFullYear()}-${d.getMonth()}`
+}
+
+function formatMonthLabel(year, month) {
+  return new Date(year, month, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+}
 
 export default function DebtorPageView({ debtorCode }) {
   const { data, sync } = useLocalFirst(
@@ -12,6 +28,22 @@ export default function DebtorPageView({ debtorCode }) {
     `debtor-code:${debtorCode}`
     // debtorId não é conhecido ainda — será resolvido após o primeiro fetch
   )
+
+  const now = new Date()
+  const [viewYear, setViewYear] = useState(now.getFullYear())
+  const [viewMonth, setViewMonth] = useState(now.getMonth())
+
+  function prevMonth() {
+    if (viewMonth === 0) { setViewYear(y => y - 1); setViewMonth(11) }
+    else setViewMonth(m => m - 1)
+  }
+
+  function nextMonth() {
+    if (viewMonth === 11) { setViewYear(y => y + 1); setViewMonth(0) }
+    else setViewMonth(m => m + 1)
+  }
+
+  const isCurrentMonth = viewYear === now.getFullYear() && viewMonth === now.getMonth()
 
   if (!data) return (
     <div className="space-y-6">
@@ -36,8 +68,9 @@ export default function DebtorPageView({ debtorCode }) {
     : { credit: 'Depositado', paid: 'Pago', balance: 'Saldo' }
 
   const pendingTransactions = transactions.filter(t => t.status === 'pending')
+  const currentKey = `${viewYear}-${viewMonth}`
   const approvedTransactions = transactions
-    .filter(t => t.status === 'approved')
+    .filter(t => t.status === 'approved' && getTxMonth(t) === currentKey)
     .sort((a, b) => new Date(b.transactionDate || b.createdAt) - new Date(a.transactionDate || a.createdAt))
   const pendingAmount = pendingTransactions.reduce((s, t) => s + t.amount, 0)
 
@@ -80,10 +113,31 @@ export default function DebtorPageView({ debtorCode }) {
 
         <div>
           <Separator className="lg:hidden" />
-          <h3 className="font-semibold mb-3 text-foreground mt-6 lg:mt-0">Histórico</h3>
+
+          <div className="flex items-center justify-between mt-6 lg:mt-0 mb-3">
+            <h3 className="font-semibold text-foreground">Histórico</h3>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" className="rounded-full w-7 h-7 p-0" onClick={prevMonth}>
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="text-xs font-medium text-muted-foreground w-28 text-center capitalize">
+                {formatMonthLabel(viewYear, viewMonth)}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full w-7 h-7 p-0"
+                onClick={nextMonth}
+                disabled={isCurrentMonth}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
           {approvedTransactions.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              Nenhuma transação registrada ainda.
+              Nenhuma transação neste mês.
             </p>
           ) : (
             <div>
