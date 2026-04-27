@@ -77,6 +77,7 @@ export default function DebtorView({ debtorId }) {
                   displayMode={displayMode}
                   showDeleteButton
                   onDelete={sync}
+                  onUpdate={sync}
                 />
               ))}
             </div>

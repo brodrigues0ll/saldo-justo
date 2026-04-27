@@ -1,7 +1,9 @@
+'use client'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { formatBRL } from '@/lib/money'
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
-import DeleteTransactionButton from '@/components/DeleteTransactionButton'
+import TransactionModal from '@/components/TransactionModal'
 
 const statusConfig = {
   approved: { label: 'Aprovado', className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
@@ -9,30 +11,34 @@ const statusConfig = {
   rejected: { label: 'Rejeitado', className: 'bg-red-500/10 text-red-500 border-red-500/20' },
 }
 
-export default function TransactionItem({ transaction, displayMode = 'deposit', showDeleteButton = false, onDelete }) {
-  const { type, amount, description, status, createdBy, createdAt, transactionDate, _id: transactionId } = transaction
+export default function TransactionItem({ transaction, displayMode = 'deposit', showDeleteButton = false, onDelete, onUpdate }) {
+  const [open, setOpen] = useState(false)
+
+  const { type, amount, description, status, createdBy, createdAt, transactionDate } = transaction
   const st = statusConfig[status] || statusConfig.approved
   const isDeposit = type === 'deposit'
   const depositLabel = displayMode === 'debt' ? 'Dívida' : 'Depósito'
-  // transactionDate é armazenado como UTC midnight → exibir em UTC para não perder um dia
-  // createdAt é um timestamp real → exibir no timezone local do usuário
+
   const date = transactionDate
     ? new Date(transactionDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit', timeZone: 'UTC' })
     : new Date(createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })
 
-  return (
-    <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0 transition-colors hover:bg-primary/5 -mx-2 px-2 rounded-lg">
+  const row = (
+    <div
+      className={cn(
+        'flex items-center gap-3 py-3 border-b border-border/50 last:border-0 transition-colors -mx-2 px-2 rounded-lg',
+        showDeleteButton ? 'cursor-pointer hover:bg-primary/5 active:bg-primary/10' : ''
+      )}
+      onClick={showDeleteButton ? () => setOpen(true) : undefined}
+    >
       {/* Ícone */}
       <div className={cn(
-        'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-200',
+        'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
         isDeposit
           ? 'bg-primary/10 text-primary dark:bg-primary/20'
           : 'bg-foreground/5 text-foreground/60'
       )}>
-        {isDeposit
-          ? <ArrowDownLeft className="w-4 h-4" />
-          : <ArrowUpRight className="w-4 h-4" />
-        }
+        {isDeposit ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
       </div>
 
       {/* Conteúdo */}
@@ -44,10 +50,7 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
           )}>
             {isDeposit ? depositLabel : 'Pagamento'}
           </span>
-          <span className={cn(
-            'text-xs px-2 py-0.5 rounded-full border font-medium',
-            st.className
-          )}>
+          <span className={cn('text-xs px-2 py-0.5 rounded-full border font-medium', st.className)}>
             {st.label}
           </span>
           {createdBy === 'debtor' && (
@@ -62,13 +65,6 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
         <p className="text-xs text-muted-foreground/60 mt-0.5">{date}</p>
       </div>
 
-      {/* Delete button (admin) */}
-      {showDeleteButton && (
-        <div className="shrink-0">
-          <DeleteTransactionButton transactionId={transactionId} onDelete={onDelete} />
-        </div>
-      )}
-
       {/* Valor */}
       <span className={cn(
         'font-semibold text-sm whitespace-nowrap',
@@ -78,5 +74,21 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
         {isDeposit ? '+' : '-'}{formatBRL(amount)}
       </span>
     </div>
+  )
+
+  if (!showDeleteButton) return row
+
+  return (
+    <>
+      {row}
+      <TransactionModal
+        transaction={transaction}
+        displayMode={displayMode}
+        open={open}
+        onOpenChange={setOpen}
+        onDelete={onDelete}
+        onUpdate={onUpdate}
+      />
+    </>
   )
 }
