@@ -12,6 +12,9 @@ import CreateDebtorButton from '@/components/CreateDebtorButton'
 import LogoutButton from '@/components/LogoutButton'
 import EnableNotificationsButton from '@/components/EnableNotificationsButton'
 import ThemeToggle from '@/components/ThemeToggle'
+import Link from 'next/link'
+import { Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 async function getDebtors(adminId) {
   await connectDB()
@@ -69,6 +72,11 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <EnableNotificationsButton role="admin" />
+            <Link href="/configuracoes">
+              <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 hover:bg-primary/10 hover:text-primary" title="Configurações">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
             <ThemeToggle />
             <CreateDebtorButton />
             <LogoutButton />

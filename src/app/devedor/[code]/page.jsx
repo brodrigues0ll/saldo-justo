@@ -3,6 +3,9 @@ import InstallPWAButton from '@/components/InstallPWAButton'
 import EnableNotificationsButton from '@/components/EnableNotificationsButton'
 import ThemeToggle from '@/components/ThemeToggle'
 import DebtorPageView from './DebtorPageView'
+import Link from 'next/link'
+import { Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default async function DebtorPage({ params }) {
   const { code } = await params
@@ -15,6 +18,11 @@ export default async function DebtorPage({ params }) {
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <EnableNotificationsButton role="debtor" debtorCode={code} />
             <InstallPWAButton />
+            <Link href="/configuracoes">
+              <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 hover:bg-primary/10 hover:text-primary" title="Configurações">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
             <ThemeToggle />
             <DebtorLogoutButton />
           </div>
