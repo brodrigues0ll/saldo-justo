@@ -21,7 +21,7 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
     : new Date(createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' })
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0 group transition-colors hover:bg-primary/5 -mx-2 px-2 rounded-lg">
+    <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0 transition-colors hover:bg-primary/5 -mx-2 px-2 rounded-lg">
       {/* Ícone */}
       <div className={cn(
         'w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-200',
@@ -64,7 +64,7 @@ export default function TransactionItem({ transaction, displayMode = 'deposit', 
 
       {/* Delete button (admin) */}
       {showDeleteButton && (
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <div className="shrink-0">
           <DeleteTransactionButton transactionId={transactionId} onDelete={onDelete} />
         </div>
       )}

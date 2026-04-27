@@ -36,7 +36,9 @@ export default function DebtorPageView({ debtorCode }) {
     : { credit: 'Depositado', paid: 'Pago', balance: 'Saldo' }
 
   const pendingTransactions = transactions.filter(t => t.status === 'pending')
-  const approvedTransactions = transactions.filter(t => t.status === 'approved')
+  const approvedTransactions = transactions
+    .filter(t => t.status === 'approved')
+    .sort((a, b) => new Date(b.transactionDate || b.createdAt) - new Date(a.transactionDate || a.createdAt))
   const pendingAmount = pendingTransactions.reduce((s, t) => s + t.amount, 0)
 
   return (
