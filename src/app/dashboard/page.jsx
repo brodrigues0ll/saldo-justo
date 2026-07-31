@@ -43,6 +43,27 @@ async function getDebtors(adminId) {
   const totalsMap = {}
   for (const t of aggregation) totalsMap[t._id.toString()] = t
 
+  // Sobrescreve totais dos devedores que tiveram dívida zerada
+  await Promise.all(
+    debtors
+      .filter(d => d.debtResetAt)
+      .map(async d => {
+        const since = d.debtResetAt
+        const [row] = await Transaction.aggregate([
+          { $match: { debtorId: d._id, createdAt: { $gte: since } } },
+          {
+            $group: {
+              _id: null,
+              totalDeposits: { $sum: { $cond: [{ $and: [{ $eq: ['$type', 'deposit'] }, { $eq: ['$status', 'approved'] }] }, '$amount', 0] } },
+              totalPaid: { $sum: { $cond: [{ $and: [{ $eq: ['$type', 'payment'] }, { $eq: ['$status', 'approved'] }] }, '$amount', 0] } },
+              pendingCount: { $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] } },
+            },
+          },
+        ])
+        totalsMap[d._id.toString()] = row ?? { totalDeposits: 0, totalPaid: 0, pendingCount: 0 }
+      })
+  )
+
   return debtors.map(d => {
     const t = totalsMap[d._id.toString()] || { totalDeposits: 0, totalPaid: 0, pendingCount: 0 }
     return {
