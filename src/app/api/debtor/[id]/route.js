@@ -22,7 +22,7 @@ export async function GET(request, context) {
   const debtor = await Debtor.findById(id).lean()
   if (!debtor) return jsonError('Devedor não encontrado', 404)
 
-  const totals = await getDebtorTotals(id)
+  const totals = await getDebtorTotals(id, { since: debtor.debtResetAt })
   const transactions = await Transaction.find({ debtorId: id })
     .sort({ createdAt: -1 })
     .lean()

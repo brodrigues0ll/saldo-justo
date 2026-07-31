@@ -11,6 +11,7 @@ const DebtorSchema = new mongoose.Schema(
       enum: ['deposit', 'debt'],
       default: 'deposit',
     },
+    debtResetAt: { type: Date },
   },
   { timestamps: true }
 )

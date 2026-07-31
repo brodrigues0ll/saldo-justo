@@ -5,9 +5,12 @@ import Transaction from '@/models/Transaction'
  * Calcula os totais financeiros de um devedor via aggregation MongoDB.
  * Pagamentos pending NÃO entram no saldo — apenas approved.
  */
-export async function getDebtorTotals(debtorId) {
+export async function getDebtorTotals(debtorId, { since } = {}) {
+  const match = { debtorId: new mongoose.Types.ObjectId(debtorId) }
+  if (since) match.createdAt = { $gte: since }
+
   const result = await Transaction.aggregate([
-    { $match: { debtorId: new mongoose.Types.ObjectId(debtorId) } },
+    { $match: match },
     {
       $group: {
         _id: null,

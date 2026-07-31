@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar'
+import UpdateBanner from '@/components/UpdateBanner'
 import AuthProvider from '@/components/AuthProvider'
 import './globals.css'
 
@@ -37,6 +38,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <ThemeProvider>
             <ServiceWorkerRegistrar />
+            <UpdateBanner />
             {children}
             <Toaster richColors position="top-right" />
           </ThemeProvider>

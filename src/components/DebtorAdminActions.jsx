@@ -1,7 +1,16 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, RotateCcw } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog'
 import AddTransactionModal from '@/components/AddTransactionModal'
 import ApproveRejectButtons from '@/components/ApproveRejectButtons'
 import { formatBRL } from '@/lib/money'
@@ -13,6 +22,21 @@ export default function DebtorAdminActions({
   onSuccess,
 }) {
   const isDebtMode = displayMode === 'debt'
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleReset() {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/debtor/${debtorId}/reset`, { method: 'POST' })
+      if (res.ok) {
+        setConfirmOpen(false)
+        onSuccess?.()
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -55,6 +79,36 @@ export default function DebtorAdminActions({
           </Button>
         </AddTransactionModal>
       </div>
+
+      {/* Botão zerar dívida */}
+      <Button
+        variant="outline"
+        className="w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+        onClick={() => setConfirmOpen(true)}
+      >
+        <RotateCcw className="w-4 h-4 mr-2 shrink-0" />
+        Zerar Dívida
+      </Button>
+
+      {/* Diálogo de confirmação */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Zerar dívida?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Isso vai apagar todas as transações e zerar a dívida total, já pago e saldo devedor. Essa ação não pode ser desfeita.
+          </p>
+          <DialogFooter className="gap-2">
+            <DialogClose asChild>
+              <Button variant="outline" disabled={loading}>Cancelar</Button>
+            </DialogClose>
+            <Button variant="destructive" onClick={handleReset} disabled={loading}>
+              {loading ? 'Zerando...' : 'Confirmar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
