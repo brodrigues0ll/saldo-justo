@@ -22,7 +22,7 @@ export async function POST(request, context) {
   )
   if (!debtor) return jsonError('Devedor não encontrado', 404)
 
-  wsBroadcast(id, { type: 'debtor:reset' })
+  wsBroadcast(id, { type: 'debtor:reset', payload: { debtResetAt: debtor.debtResetAt } })
 
   return jsonOk({ message: 'Dívida zerada com sucesso' })
 }

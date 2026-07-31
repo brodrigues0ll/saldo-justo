@@ -110,29 +110,38 @@ function applyWsMessage(msg, applyUpdate) {
     applyUpdate(prev => {
       if (prev.transactions.some(t => t._id === payload._id)) return prev
       const transactions = [payload, ...prev.transactions]
-      return { ...prev, transactions, ...computeTotals(transactions) }
+      const since = prev.debtResetAt ? new Date(prev.debtResetAt) : null
+      return { ...prev, transactions, ...computeTotals(transactions, since) }
     })
   } else if (type === 'tx:delete') {
     applyUpdate(prev => {
       const transactions = prev.transactions.filter(t => t._id !== payload._id)
-      return { ...prev, transactions, ...computeTotals(transactions) }
+      const since = prev.debtResetAt ? new Date(prev.debtResetAt) : null
+      return { ...prev, transactions, ...computeTotals(transactions, since) }
     })
   } else if (type === 'tx:update') {
     applyUpdate(prev => {
       const transactions = prev.transactions.map(t =>
         t._id === payload._id ? { ...t, ...payload } : t
       )
-      return { ...prev, transactions, ...computeTotals(transactions) }
+      const since = prev.debtResetAt ? new Date(prev.debtResetAt) : null
+      return { ...prev, transactions, ...computeTotals(transactions, since) }
     })
   } else if (type === 'debtor:update') {
     applyUpdate(prev => ({ ...prev, ...payload }))
+  } else if (type === 'debtor:reset') {
+    applyUpdate(prev => {
+      const since = payload?.debtResetAt ? new Date(payload.debtResetAt) : null
+      return { ...prev, debtResetAt: payload?.debtResetAt, ...computeTotals(prev.transactions, since) }
+    })
   }
 }
 
-function computeTotals(transactions) {
+function computeTotals(transactions, since = null) {
   let totalDeposits = 0, totalPaid = 0
   for (const t of transactions) {
     if (t.status !== 'approved') continue
+    if (since && new Date(t.createdAt) < since) continue
     if (t.type === 'deposit') totalDeposits += t.amount
     else if (t.type === 'payment') totalPaid += t.amount
   }

@@ -17,7 +17,7 @@ export async function GET() {
 
   const debtorsWithTotals = await Promise.all(
     debtors.map(async (debtor) => {
-      const totals = await getDebtorTotals(debtor._id)
+      const totals = await getDebtorTotals(debtor._id, { since: debtor.debtResetAt })
       const { createdBy, ...rest } = debtor
       return { ...rest, ...totals }
     })
