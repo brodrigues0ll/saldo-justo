@@ -6,7 +6,7 @@ import mongoose from 'mongoose'
 
 export const dynamic = 'force-dynamic'
 import Debtor from '@/models/Debtor'
-import { getDebtorTotals } from '@/lib/debtor-totals'
+import Transaction from '@/models/Transaction'
 import DebtorCard from '@/components/DebtorCard'
 import CreateDebtorButton from '@/components/CreateDebtorButton'
 import LogoutButton from '@/components/LogoutButton'
@@ -20,19 +20,42 @@ async function getDebtors(adminId) {
   await connectDB()
 
   const debtors = await Debtor.find({ createdBy: new mongoose.Types.ObjectId(adminId) }).lean()
+  const debtorIds = debtors.map(d => d._id)
 
-  return Promise.all(
-    debtors.map(async d => {
-      const totals = await getDebtorTotals(d._id, { since: d.debtResetAt })
-      return {
-        _id: d._id.toString(),
-        name: d.name,
-        code: d.code,
-        displayMode: d.displayMode || 'deposit',
-        ...totals,
-      }
-    })
-  )
+  const aggregation = await Transaction.aggregate([
+    { $match: { debtorId: { $in: debtorIds } } },
+    {
+      $group: {
+        _id: '$debtorId',
+        totalDeposits: {
+          $sum: { $cond: [{ $and: [{ $eq: ['$type', 'deposit'] }, { $eq: ['$status', 'approved'] }] }, '$amount', 0] },
+        },
+        totalPaid: {
+          $sum: { $cond: [{ $and: [{ $eq: ['$type', 'payment'] }, { $eq: ['$status', 'approved'] }] }, '$amount', 0] },
+        },
+        pendingCount: {
+          $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] },
+        },
+      },
+    },
+  ])
+
+  const totalsMap = {}
+  for (const t of aggregation) totalsMap[t._id.toString()] = t
+
+  return debtors.map(d => {
+    const t = totalsMap[d._id.toString()] || { totalDeposits: 0, totalPaid: 0, pendingCount: 0 }
+    return {
+      _id: d._id.toString(),
+      name: d.name,
+      code: d.code,
+      displayMode: d.displayMode || 'deposit',
+      totalDeposits: t.totalDeposits,
+      totalPaid: t.totalPaid,
+      pendingCount: t.pendingCount,
+      balance: t.totalDeposits - t.totalPaid,
+    }
+  })
 }
 
 export default async function DashboardPage() {
